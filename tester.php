@@ -6,7 +6,7 @@
 <head>
 <meta charset=utf-8>
 <meta http-equiv=X-UA-Compatible content="IE=edge,chrome=1">
-<title>phpVibe Tester</title>
+<title>PHPVibe Tester</title>
 <meta name=description content>
 <meta name=author content>
 <meta name=viewport content="width=device-width,initial-scale=1">
@@ -15,7 +15,7 @@
 <link href="//fonts.googleapis.com/css?family=Open+Sans:600,700" rel="stylesheet" type="text/css">
 
 <style>
-body{color:#444;text-shadow:0 1px 0 #fff;padding:10px}
+body{color:#444;padding:10px}
 article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display:block}
 audio,canvas,video{display:inline;zoom:1}
 html{font-size:100%;overflow-y:scroll;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
@@ -71,6 +71,10 @@ a:focus,input[type=text]:focus,input[type=password]:focus,textarea:focus,a:hover
 </head>
 <div id="page-container">
 <h1> PHPVibe tester</h1>
+<div class="btn_group">
+<a href="http://store.phprevolution.com/buy?id=14" class="btn_green">Get PHPVibe</a>
+<a href="http://www.phprevolution.com/phpvibe/" class="btn_red">Read more </a>
+</div>
 <hr>
 <?php
 $error = 0;
@@ -85,6 +89,7 @@ function getDataFromUrl($url) {
 		curl_close($ch);
 		return $data;
 	}
+echo "<h2>Basic requirements</h2>";	
 if(!extension_loaded('mbstring')) { 
 echo '<div class="msg-hint">Seems your host misses the MbString extension. This is not an error, but you may see weird characters when cutting uft-8 titles  </div>';
  } else {
@@ -102,32 +107,14 @@ $gefunden = false; foreach ( get_loaded_extensions() as $number => $extension_na
  if($gefunden) {
  echo '<div class="msg-win">Ioncube loader is available!</div>';
  } else {
- echo '<div class="msg-warning">Seems ioncube loader is missing</div>'; $error++; 
- }
-if(function_exists('exec')) {
-   echo '<div class="msg-win">exec is enabled!</div>';
-}	else {
-echo '<div class="msg-warning">exec is disabled. FFMPEG won\'t work.</div>'; 
-}
-if(function_exists('shell_exec')) {
-   echo '<div class="msg-win">shell_exec is enabled!</div>';
-}	else {
-echo '<div class="msg-warning">shell_exec is disabled. FFMPEG works.</div>'; 
-}
-if(function_exists('shell_exec')) {
-$ffmpeg = trim(shell_exec('type -P ffmpeg'));
-if (empty($ffmpeg)) {
-echo '<div class="msg-warning">Could not locate FFMPEG via a php command. FFMPEG is optional.</div>'; 
-} else {
-echo '<div class="msg-win">FFMPEG seems to be available. FFMPEG is optional.</div>'; 
-}
+ echo '<div class="msg-warning">Seems ioncube loader is missing. >> <a href="http://www.ioncube.com/loaders.php">Official link</a> >> <a href="http://docs.whmcs.com/Ioncube_Installation_Tutorial">Installation</a></div>'; $error++; 
 
-} else {
-echo '<div class="msg-warning">Could not locate FFMPEG. FFMPEG is optional.</div>'; 
-}
+ }
+
 $result = getDataFromUrl("http://labs.phpvibe.com/demo.php");
 $result = json_decode($result, true);
-echo "<h2>License key check simulation (depends on cUrl)</h2>";
+echo "<h2>License key check simulation</h2>";
+echo "<h4>Requirement: cUrl. <a href=\"http://myhosting.com/kb/index.php?/article/AA-05017/0/How-to-enable-cURL-on-WHM-cPanel-using-EasyApache.html\" target=\"_blank\">Installation</a></h4>";
 if($result['valid'] == "true"){
 echo '<div class="msg-win">Passed. Test result is below.</div>';
 } else {
@@ -137,7 +124,9 @@ $error++;
 echo "<pre>";
 var_dump($result);
 echo "</pre>";
-echo "<h2>Youtube API test (depends on cUrl)</h2>";
+echo "<h2>Youtube API test </h2>
+<h4>Requirement: cUrl. <a href=\"http://myhosting.com/kb/index.php?/article/AA-05017/0/How-to-enable-cURL-on-WHM-cPanel-using-EasyApache.html\" target=\"_blank\">Installation</a></h4>
+";
 $content = getDataFromUrl('http://gdata.youtube.com/feeds/api/videos/fIadOXV1wVg?v=2&alt=jsonc');
 $content = json_decode($content,true);
 if(isset($content['data']['title']) && !empty($content['data']['title']) ){
@@ -160,7 +149,31 @@ $error++;
 }
 echo "<pre>";
 var_dump($content);
-echo "</pre>";	
+echo "</pre>";
+echo "<h2>Cron & FFMPEG Requirements</h2>
+<h4>Optional! But needed for automated imports from Youtube/etc and video conversion from avi/mpeg to mp4 (ffmpeg)</h4>
+"; 
+if(function_exists('exec')) {
+   echo '<div class="msg-win">exec is enabled!</div>';
+}	else {
+echo '<div class="msg-warning">exec is disabled. FFMPEG won\'t work.</div>'; 
+}
+if(function_exists('shell_exec')) {
+   echo '<div class="msg-win">shell_exec is enabled!</div>';
+}	else {
+echo '<div class="msg-warning">shell_exec is disabled. FFMPEG works.</div>'; 
+}
+if(function_exists('shell_exec')) {
+$ffmpeg = trim(shell_exec('type -P ffmpeg'));
+if (empty($ffmpeg)) {
+echo '<div class="msg-warning">Could not locate FFMPEG via a php command. FFMPEG is optional.</div>'; 
+} else {
+echo '<div class="msg-win">FFMPEG seems to be available. FFMPEG is optional.</div>'; 
+}
+
+} else {
+echo '<div class="msg-warning">Could not locate FFMPEG. FFMPEG is optional.</div>'; 
+}	
 echo "<h2>Test completed</h2>";
 if($error > 0) {
 echo '<div class="msg-warning">'.$error.' errors listed above. You will need to contact your hosting regarding this or switch to another host in order to run PHPVibe.</div>';
@@ -170,7 +183,7 @@ echo '<div class="msg-win">Congratulations! Even if PHPVibe depends on a bit mor
 ?>
 <div class="btn_group">
 <a href="http://store.phprevolution.com/buy?id=14" class="btn_green">Get PHPVibe</a>
-<a href="http://www.phprevolution.com/phpvibe/" class="btn_red">Read more </a>
+<a href="http://www.phprevolution.com/installing-phpvibe/" class="btn_red">Installation tutorial </a>
 </div>
 </div>​
 </body>
