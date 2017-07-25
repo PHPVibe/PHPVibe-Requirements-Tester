@@ -19,8 +19,8 @@ body{color:#444;padding:10px}
 article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display:block}
 audio,canvas,video{display:inline;zoom:1}
 html{font-size:100%;overflow-y:scroll;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
-body,.ui-widget{font-size:12px;line-height:1.231;margin:0}
-body p{font-size:12px}
+body,.ui-widget{font-size:15px;line-height:1.231;margin:0}
+body p{font-size:15px}
 body,button,input,select,textarea,.ui-widget{font-family:Ubuntu,sans-serif;color:#222}
 ::-moz-selection{background:#b90000;color:#fff;text-shadow:none}
 ::selection{text-shadow:none;background:#FF6C60;color:#fff}
@@ -70,11 +70,13 @@ a:focus,input[type=text]:focus,input[type=password]:focus,textarea:focus,a:hover
 </style>
 </head>
 <div id="page-container">
-<h1> PHPVibe tester</h1>
-<div class="btn_group">
-<a href="http://store.phprevolution.com/buy?id=14" class="btn_green">Get PHPVibe</a>
-<a href="http://www.phprevolution.com/phpvibe/" class="btn_red">Read more </a>
-</div>
+<h1> PHPVibe</h1>
+<hr>
+<p style="text-align:center;"><img style="border-radius:2%;" src="http://www.phpvibe.com/wp-content/uploads/2016/04/iphone-6phpvibe-500.jpg"/></p>
+<hr>
+<h3>First of all : Thank you for considering our product!</h3>
+<h3>We strive to market a video cms which fits most needs and to this purpose we are updating it periodically.</h3>
+<h3>Now, let's test a bit this hosting</h3>
 <hr>
 <?php
 $error = 0;
@@ -95,12 +97,28 @@ echo '<div class="msg-hint">Seems your host misses the MbString extension. This 
  } else {
  echo '<div class="msg-win">MbString found!</div>';
  }
-if (phpversion() < 5) {
-echo '<div class="msg-warning">Error: phpVibe needs php 5.0+ (your version is '.phpversion().' )</div>';
+ if(!extension_loaded('mcrypt')) { 
+echo '<div class="msg-hint">Seems your host misses the Mcrypt extension. This is required for cookies security.  </div>';
+ } else {
+ echo '<div class="msg-win">Mcrypt found!</div>';
+ }
+  if(!extension_loaded('gd')) { 
+echo '<div class="msg-hint">Seems your host misses the GD2 extension. This is required for images.  </div>';
+ } else {
+ echo '<div class="msg-win">GD2 found!</div>';
+ }
+   if(ini_get('safe_mode')) { 
+echo '<div class="msg-hint">Safe_mode seems to be on. This may cause issues.  </div>';
+ } else {
+ echo '<div class="msg-win">Safe_mode seems to be off.</div>';
+ }
+if (phpversion() < 5.5) {
+echo '<div class="msg-warning">Error: phpVibe needs php 5.5+ (your version is '.phpversion().' )</div>';
 $error++;
 }  else {
 echo '<div class="msg-win">PHP is OK. Version : '.phpversion().'!</div>';
 }
+if (phpversion() < 7) {
 $gefunden = false; foreach ( get_loaded_extensions() as $number => $extension_name ) { if ( (strpos( strtolower($extension_name) , "ioncube" )) === false)
  {  echo ""; } else { $gefunden = true; } }
  
@@ -110,10 +128,10 @@ $gefunden = false; foreach ( get_loaded_extensions() as $number => $extension_na
  echo '<div class="msg-warning">Seems ioncube loader is missing. >> <a href="http://www.ioncube.com/loaders.php">Official link</a> >> <a href="http://docs.whmcs.com/Ioncube_Installation_Tutorial">Installation</a></div>'; $error++; 
 
  }
-
+}
 $result = getDataFromUrl("http://labs.phpvibe.com/demo.php");
 $result = json_decode($result, true);
-echo "<h2>License key check simulation</h2>";
+echo "<h2>Curl test (License key check simulation)</h2>";
 echo "<h4>Requirement: cUrl. <a href=\"http://myhosting.com/kb/index.php?/article/AA-05017/0/How-to-enable-cURL-on-WHM-cPanel-using-EasyApache.html\" target=\"_blank\">Installation</a></h4>";
 if($result['valid'] == "true"){
 echo '<div class="msg-win">Passed. Test result is below.</div>';
@@ -124,34 +142,8 @@ $error++;
 echo "<pre>";
 var_dump($result);
 echo "</pre>";
-echo "<h2>Youtube API test </h2>
-<h4>Requirement: cUrl. <a href=\"http://myhosting.com/kb/index.php?/article/AA-05017/0/How-to-enable-cURL-on-WHM-cPanel-using-EasyApache.html\" target=\"_blank\">Installation</a></h4>
-";
-$content = getDataFromUrl('http://gdata.youtube.com/feeds/api/videos/fIadOXV1wVg?v=2&alt=jsonc');
-$content = json_decode($content,true);
-if(isset($content['data']['title']) && !empty($content['data']['title']) ){
-echo '<div class="msg-win">Passed. Test result is below.</div>';
-echo "
-<table>
-<tr>
-<td>
-<img src='".$content['data']['thumbnail']['sqDefault']."'/>
-</td>
-<td>
-".htmlentities($content['data']['title'], ENT_QUOTES, "UTF-8")."
-</td>
-</tr>
-</table>
-";
-} else {
-echo '<div class="msg-warning">Failed. Test result is below.</div>';
-$error++;
-}
-echo "<pre>";
-var_dump($content);
-echo "</pre>";
-echo "<h2>Cron & FFMPEG Requirements</h2>
-<h4>Optional! But needed for automated imports from Youtube/etc and video conversion from avi/mpeg to mp4 (ffmpeg)</h4>
+echo "<h2>FFMPEG</h2>
+<h4>Optional! But required for video conversions, duration and thumbnail extraction</h4>
 "; 
 if(function_exists('exec')) {
    echo '<div class="msg-win">exec is enabled!</div>';
@@ -168,9 +160,14 @@ $ffmpeg = trim(shell_exec('type -P ffmpeg'));
 if (empty($ffmpeg)) {
 echo '<div class="msg-warning">Could not locate FFMPEG via a php command. FFMPEG is optional.</div>'; 
 } else {
-echo '<div class="msg-win">FFMPEG seems to be available. FFMPEG is optional.</div>'; 
+echo '<div class="msg-win">FFMPEG seems to be available as <strong>'.$ffmpeg.'. Required version is 1+</strong></div>'; 
+exec($ffmpeg." -h full", $codecArr);
+echo "<pre>";
+for($ii=0;$ii<count($codecArr);$ii++){
+    echo $codecArr[$ii].'</br>';
 }
-
+echo "</pre>";
+}
 } else {
 echo '<div class="msg-warning">Could not locate FFMPEG. FFMPEG is optional.</div>'; 
 }	
@@ -178,12 +175,14 @@ echo "<h2>Test completed</h2>";
 if($error > 0) {
 echo '<div class="msg-warning">'.$error.' errors listed above. You will need to contact your hosting regarding this or switch to another host in order to run PHPVibe.</div>';
 } else {
-echo '<div class="msg-win">Congratulations! Even if PHPVibe depends on a bit more that this test performs, you seem to have a fit hosting environment.</div>';
+echo '<div class="msg-win">Congratulations! </div> 
+<div class="msg-info">
+Even if PHPVibe depends on a bit more that this test performs, you seem to have a fit hosting environment.</div>';
 }
 ?>
 <div class="btn_group">
-<a href="http://store.phprevolution.com/buy?id=14" class="btn_green">Get PHPVibe</a>
-<a href="http://www.phprevolution.com/installing-phpvibe/" class="btn_red">Installation tutorial </a>
+<a href="http://get.phpvibe.com/" class="btn_green">Get PHPVibe</a>
+<a href="ff.php" class="btn_red">Run FFMPEG conversion test</a>
 </div>
 </div>​
 </body>
